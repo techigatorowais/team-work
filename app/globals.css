@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+nextjs-portal {
+  display: none;
+}
+
+
+.react-calendar {
+  width: 100% !important;
+  border: none !important;
+}
+
+.react-calendar__navigation__label__labelText {
+  font-weight: 600 !important;
+}
+
+.react-calendar__tile--active {
+  background-color: #c3ebfa !important;
+  color: black !important;
+}
+
+.react-datepicker {
+  z-index: 9;
+  position: absolute !important;
+}
+
+.tag-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.tag-dropdown .dropdown-button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.tag-dropdown .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  border: 1px solid #ccc;
+  background-color: white;
+  display: none;
+  flex-direction: column;
+  padding: 5px 0;
+}
+
+.tag-dropdown .dropdown-button:hover + .tag-dropdown .dropdown-menu,
+.tag-dropdown .dropdown-menu:hover {
+  display: flex;
+}
+
+.tag-dropdown .dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.tag-dropdown .dropdown-item:hover {
+  background-color: #f1f1f1;
+}
+
+.tag-dropdown .selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.tag-dropdown .selected-tags {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.desc .rdw-editor-main {
+  padding: 0 16px;
+  min-height: 150px;
+}
+
+.desc .demo-wrapper {
+  border: 1px solid #f1f1f1;
+}
+
+.desc .rdw-editor-toolbar {
+  border: 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.custom-tooltip {
+  max-width: 300px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.task_name {
+  flex: 0 0 400px;
+}

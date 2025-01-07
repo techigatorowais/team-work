@@ -1,0 +1,1581 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model add_phones {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  client_id  Int?      @default(0)
+  phone      String?   @db.VarChar(255)
+  status     Int?      @default(1)
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model admin_views {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  admin_id    BigInt    @db.UnsignedBigInt
+  page_url    String    @db.LongText
+  ip_address  String?   @default("127.0.0.1") @db.VarChar(255)
+  ip_response String?   @db.LongText
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+
+  @@index([admin_id], map: "admin_views_admin_id_foreign")
+}
+
+model admins {
+  id                BigInt      @id @default(autoincrement()) @db.UnsignedBigInt
+  name              String      @db.VarChar(255)
+  email             String      @db.VarChar(255)
+  phone             String?     @db.VarChar(255)
+  pseudo_email      String?     @db.VarChar(255)
+  email_verified_at DateTime?   @db.Timestamp(0)
+  password          String      @db.VarChar(255)
+  image             String?     @db.VarChar(255)
+  designation       String?     @db.VarChar(255)
+  remember_token    String?     @db.VarChar(100)
+  created_at        DateTime?   @db.Timestamp(0)
+  updated_at        DateTime?   @db.Timestamp(0)
+  type              admins_type
+  status            Int         @default(1)
+}
+
+model assign_board_cards {
+  id                 BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  board_list_card_id BigInt    @db.UnsignedBigInt
+  user_id            BigInt    @db.UnsignedBigInt
+  deleted_at         DateTime? @db.Timestamp(0)
+
+  @@index([board_list_card_id], map: "assign_board_cards_board_list_card_id_index")
+  @@index([user_id], map: "assign_board_cards_user_id_index")
+}
+
+model assign_board_labels {
+  id                 BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  board_list_card_id BigInt?   @default(0) @db.UnsignedBigInt
+  label_id           BigInt?   @default(0) @db.UnsignedBigInt
+  deleted_at         DateTime? @db.Timestamp(0)
+
+  @@index([board_list_card_id], map: "assign_board_labels_board_list_card_id_index")
+  @@index([label_id], map: "assign_board_labels_label_id_index")
+}
+
+model assign_brands {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key   Int
+  brand_key  Int
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model assign_department_board_lists {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  department_id BigInt    @db.UnsignedBigInt
+  board_list_id BigInt    @db.UnsignedBigInt
+  deleted_at    DateTime? @db.Timestamp(0)
+
+  @@index([board_list_id], map: "assign_department_board_lists_board_list_id_index")
+  @@index([department_id], map: "assign_department_board_lists_department_id_index")
+}
+
+model assign_department_users {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  department_id BigInt    @db.UnsignedBigInt
+  user_id       BigInt    @db.UnsignedBigInt
+  deleted_at    DateTime? @db.Timestamp(0)
+
+  @@index([department_id], map: "assign_department_users_department_id_index")
+  @@index([user_id], map: "assign_department_users_user_id_index")
+}
+
+model assign_user_brand_emails {
+  id                     BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  email_configuration_id BigInt?   @default(0) @db.UnsignedBigInt
+  user_id                BigInt?   @default(0) @db.UnsignedBigInt
+  deleted_at             DateTime? @db.Timestamp(0)
+
+  @@index([email_configuration_id], map: "assign_user_brand_emails_email_configuration_id_index")
+  @@index([user_id], map: "assign_user_brand_emails_user_id_index")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model attachment_urls {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  url        String?   @db.LongText
+  status     Int       @default(0) @db.TinyInt
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([status], map: "status")
+}
+
+model attachments {
+  attachment_id                 Int       @id @default(autoincrement())
+  attachment_task_id            Int?
+  attachment_department_id      Int?      @default(0)
+  attachment_card_id            String?   @db.VarChar(100)
+  attachment_trello_attach_id   String?   @db.VarChar(200)
+  attachment_url                String?   @db.Text
+  board_list_card_attachment_id Int?      @default(0)
+  attachment_type               String?   @default("file") @db.VarChar(100)
+  file_type                     String?   @default("file") @db.VarChar(100)
+  attachment_json               String?   @db.Text
+  attachment_status             Int?      @default(0)
+  attachment_createdon          DateTime? @default(now()) @db.Timestamp(0)
+
+  @@index([attachment_status], map: "attachment_status")
+  @@index([attachment_trello_attach_id], map: "attachment_trello_attach_id")
+  @@index([attachment_type], map: "attachment_type")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model board_list_card_activities {
+  id                 Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id            Int?      @db.UnsignedInt
+  board_list_card_id Int?      @db.UnsignedInt
+  activity           String?   @db.LongText
+  activity_type      Int?      @default(0) @db.TinyInt
+  deleted_at         DateTime? @db.Timestamp(0)
+  created_at         DateTime? @db.Timestamp(0)
+  updated_at         DateTime? @db.Timestamp(0)
+
+  @@index([board_list_card_id], map: "board_list_card_activities_board_list_card_id_index")
+  @@index([user_id], map: "board_list_card_activities_user_id_index")
+  @@index([id], map: "id")
+}
+
+model board_list_card_attachments {
+  id                 BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id            BigInt?   @default(0) @db.UnsignedBigInt
+  board_list_card_id BigInt?   @default(0) @db.UnsignedBigInt
+  activity_id        BigInt?   @default(0) @db.UnsignedBigInt
+  original_name      String?   @db.VarChar(255)
+  file_name          String?   @db.VarChar(255)
+  file_path          String?   @db.VarChar(255)
+  file_size          String?   @db.VarChar(255)
+  mime_type          String?   @db.VarChar(255)
+  extension          String?   @db.VarChar(255)
+  deleted_at         DateTime? @db.Timestamp(0)
+  created_at         DateTime? @db.Timestamp(0)
+  updated_at         DateTime? @db.Timestamp(0)
+
+  @@index([activity_id], map: "board_list_card_attachments_activity_id_index")
+  @@index([board_list_card_id], map: "board_list_card_attachments_board_list_card_id_index")
+  @@index([user_id], map: "board_list_card_attachments_user_id_index")
+}
+
+model board_list_card_comment_previous_logs {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id          BigInt?   @default(0) @db.UnsignedBigInt
+  comment_id       BigInt?   @default(0) @db.UnsignedBigInt
+  previous_comment String?   @db.LongText
+  deleted_at       DateTime? @db.Timestamp(0)
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+
+  @@index([comment_id], map: "board_list_card_comment_previous_logs_comment_id_index")
+  @@index([user_id], map: "board_list_card_comment_previous_logs_user_id_index")
+}
+
+model board_list_card_comments {
+  id                 BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id            BigInt?   @default(0) @db.UnsignedBigInt
+  board_list_card_id BigInt?   @default(0) @db.UnsignedBigInt
+  activity_id        BigInt?   @default(0) @db.UnsignedBigInt
+  is_modified        Int?      @default(1) @db.UnsignedTinyInt
+  comment            String?   @db.LongText
+  deleted_at         DateTime? @db.Timestamp(0)
+  created_at         DateTime? @db.Timestamp(0)
+  updated_at         DateTime? @db.Timestamp(0)
+
+  @@index([board_list_card_id], map: "board_list_card_comments_board_list_card_id_index")
+  @@index([user_id], map: "board_list_card_comments_user_id_index")
+  @@index([is_modified], map: "is_modified")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model board_list_cards {
+  id                     BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  board_list_id          BigInt?   @db.UnsignedBigInt
+  team_key               BigInt?   @default(0)
+  client_id              BigInt?   @db.UnsignedBigInt
+  project_id             BigInt?   @db.UnsignedBigInt
+  title                  String?   @db.VarChar(255)
+  description            String?   @db.LongText
+  cover_image            String?   @db.VarChar(255)
+  cover_image_updated_at DateTime? @db.Timestamp(0)
+  cover_background_color String?   @default("#fff") @db.VarChar(7)
+  cover_image_size       Int?      @default(0) @db.TinyInt
+  priority               Int?      @default(1) @db.TinyInt
+  is_activity            Int?      @default(0) @db.TinyInt
+  is_verify              Int?      @default(0) @db.TinyInt
+  is_attachments         Int?      @default(0) @db.TinyInt
+  trello_url             String?   @db.VarChar(255)
+  total_activities       Int?
+  is_check_start_date    Boolean   @default(false)
+  start_date             DateTime? @db.Timestamp(0)
+  is_check_due_date      Boolean   @default(false)
+  due_date               DateTime? @db.Timestamp(0)
+  task_completed         Int?      @default(0) @db.TinyInt
+  position               Int       @default(0)
+  status                 Int?      @default(1) @db.TinyInt
+  created_at             DateTime? @db.Timestamp(0)
+  updated_at             DateTime? @db.Timestamp(0)
+  deleted_at             DateTime? @db.Timestamp(0)
+  trello_id              String?   @db.VarChar(255)
+  code                   String?   @db.VarChar(255)
+
+  @@index([due_date], map: "board_list_cards_due_date_index")
+  @@index([priority], map: "board_list_cards_priority_index")
+  @@index([title(length: 250)], map: "board_list_cards_title_index")
+}
+
+model board_list_teams {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  board_list_id BigInt    @db.UnsignedBigInt
+  team_key      Int
+  deleted_at    DateTime? @db.Timestamp(0)
+
+  @@index([board_list_id, team_key], map: "board_list_teams_board_list_id_team_key_index")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model board_lists {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  position   Int?      @default(1) @db.UnsignedSmallInt
+  title      String?   @db.VarChar(255)
+  sort_tasks String?   @db.VarChar(255)
+  status     Int       @default(1) @db.TinyInt
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+
+  @@index([position], map: "board_lists_position_index")
+  @@index([title(length: 250)], map: "board_lists_title_index")
+}
+
+model brands {
+  id                  BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  brand_key           Int
+  name                String             @db.VarChar(255)
+  brand_type          brands_brand_type? @default(Book)
+  brand_url           String             @db.VarChar(255)
+  logo                String             @db.VarChar(255)
+  fav                 String?            @db.VarChar(255)
+  is_visitor          Int?               @default(0) @db.TinyInt
+  is_paypal           Int?               @default(0) @db.TinyInt
+  is_amazon           Int?               @default(0) @db.TinyInt
+  expigate_id         BigInt?            @default(1) @db.UnsignedBigInt
+  payarc_id           BigInt?            @default(1) @db.UnsignedBigInt
+  crawl               Int?               @default(1) @db.TinyInt
+  checkout_version    String?            @db.VarChar(50)
+  status              Int
+  merchant_id         Int
+  default_merchant_id Int?               @default(1) @db.TinyInt
+  assign_status       Int                @default(0)
+  smtp_host           String?            @db.VarChar(100)
+  smtp_email          String?            @db.VarChar(50)
+  smtp_password       String?            @db.VarChar(100)
+  smtp_port           String?            @db.VarChar(50)
+  admin_email         String?            @db.VarChar(255)
+  phone               String?            @db.VarChar(255)
+  phone_secondary     String?            @db.VarChar(255)
+  email               String?            @db.VarChar(255)
+  email_href          String?            @db.VarChar(255)
+  contact_email       String?            @db.VarChar(255)
+  contact_email_href  String?            @db.VarChar(255)
+  website_name        String?            @db.VarChar(255)
+  website_logo        String?            @db.VarChar(255)
+  address             String?            @db.VarChar(255)
+  chat                String?            @db.LongText
+  deleted_at          DateTime?          @db.Timestamp(0)
+  created_at          DateTime?          @db.Timestamp(0)
+  updated_at          DateTime?          @db.Timestamp(0)
+  is_expigate         String?            @db.VarChar(255)
+}
+
+model call_logs {
+  id        BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  client_id Int?    @default(0)
+  response  String? @db.Text
+  status    Int?    @default(1)
+}
+
+model cards {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  title      String    @db.VarChar(255)
+  team_id    BigInt?   @db.UnsignedBigInt
+  position   BigInt?   @db.UnsignedBigInt
+  sort_tasks String?   @db.Text
+  status     Int       @default(1)
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model categories {
+  id         BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String            @db.VarChar(255)
+  active     categories_active
+  deleted_at DateTime?         @db.Timestamp(0)
+  created_at DateTime?         @db.Timestamp(0)
+  updated_at DateTime?         @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cc_infos {
+  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  client_id       BigInt?   @db.UnsignedBigInt
+  invoice_id      BigInt?   @db.UnsignedBigInt
+  payment_gateway Int?      @db.TinyInt
+  card_name       String?   @db.VarChar(255)
+  card_type       String?   @db.VarChar(255)
+  card_number     String?   @db.VarChar(150)
+  card_exp_month  String?   @db.VarChar(2)
+  card_exp_year   String?   @db.VarChar(4)
+  card_cvv        String?   @db.VarChar(150)
+  address         String?   @db.Text
+  zipcode         String?   @db.VarChar(255)
+  city            String?   @db.VarChar(255)
+  state           String?   @db.VarChar(255)
+  country         String?   @db.VarChar(255)
+  status          Int       @default(0)
+  deleted_at      DateTime? @db.Timestamp(0)
+  created_at      DateTime? @db.Timestamp(0)
+  updated_at      DateTime? @db.Timestamp(0)
+  clients         clients?  @relation(fields: [client_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "cc_infos_client_id_foreign")
+
+  @@index([client_id], map: "cc_infos_client_id_foreign")
+}
+
+model clients {
+  id                         BigInt     @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key                   Int
+  brand_key                  Int
+  creatorid                  Int
+  name                       String     @db.VarChar(255)
+  email                      String     @db.VarChar(255)
+  phone                      String     @db.VarChar(255)
+  address                    String?    @db.VarChar(255)
+  ip_address                 String?    @db.VarChar(45)
+  status                     Int
+  deleted_at                 DateTime?  @db.Timestamp(0)
+  created_at                 DateTime?  @db.Timestamp(0)
+  updated_at                 DateTime?  @db.Timestamp(0)
+  agent_id                   Int?
+  client_created_from_leadid Int?
+  client_description         String?    @db.Text
+  cc_infos                   cc_infos[]
+}
+
+model colors {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  color_name     String    @db.VarChar(255)
+  color_value    String    @db.VarChar(255)
+  color_position String    @db.VarChar(255)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+}
+
+model comments {
+  id           BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  creatorid    Int
+  clientid     Int?
+  comment_text String        @db.Text
+  projectid    Int
+  deleted_at   DateTime?     @db.Timestamp(0)
+  created_at   DateTime?     @db.Timestamp(0)
+  updated_at   DateTime?     @db.Timestamp(0)
+  type         comments_type
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model customer_payment_profiles {
+  id                  BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  client_id           BigInt?   @default(0) @db.UnsignedBigInt
+  model_id            BigInt?   @default(0) @db.UnsignedBigInt
+  model_type          String?   @db.VarChar(255)
+  customer_profile_id String?   @db.VarChar(255)
+  response            String?   @db.LongText
+  status              Int       @default(1) @db.TinyInt
+  deleted_at          DateTime? @db.Timestamp(0)
+  created_at          DateTime? @db.Timestamp(0)
+  updated_at          DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model customer_sheet_attachments {
+  id                BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  creator_id        BigInt?   @db.UnsignedBigInt
+  creator_type      String?   @db.VarChar(25)
+  customer_sheet_id BigInt?   @default(0) @db.UnsignedBigInt
+  original_name     String?   @db.VarChar(255)
+  file_name         String?   @db.VarChar(255)
+  file_path         String?   @db.VarChar(255)
+  file_size         String?   @db.VarChar(255)
+  mime_type         String?   @db.VarChar(255)
+  extension         String?   @db.VarChar(255)
+  status            Int       @default(1) @db.TinyInt
+  deleted_at        DateTime? @db.Timestamp(0)
+  created_at        DateTime? @db.Timestamp(0)
+  updated_at        DateTime? @db.Timestamp(0)
+
+  @@index([creator_id], map: "customer_sheet_attachments_creator_id_index")
+  @@index([customer_sheet_id], map: "customer_sheet_attachments_customer_sheet_id_index")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model customer_sheets {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  customer_id      Int?      @default(0)
+  customer_name    String?   @db.VarChar(255)
+  customer_email   String?   @db.VarChar(255)
+  customer_phone   String?   @db.VarChar(255)
+  order_date       DateTime? @db.Timestamp(0)
+  order_type       Int?      @default(0) @db.TinyInt
+  filling          Int?      @db.TinyInt
+  amount_charged   String?   @db.VarChar(255)
+  order_status     Int?      @db.TinyInt
+  communication    Int?      @db.TinyInt
+  project_assigned String?   @db.VarChar(255)
+  creator_id       BigInt?   @db.UnsignedBigInt
+  creator_type     String?   @db.VarChar(25)
+  status           Int       @default(1) @db.TinyInt
+  deleted_at       DateTime? @db.Timestamp(0)
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model departments {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name             String?   @db.VarChar(255)
+  background_image String?   @db.VarChar(255)
+  order            Int?      @db.UnsignedInt
+  status           Int       @default(1) @db.TinyInt
+  deleted_at       DateTime? @db.Timestamp(0)
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model email_configurations {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  created_by    BigInt?   @default(0) @db.UnsignedBigInt
+  parent_id     BigInt?   @default(0) @db.UnsignedBigInt
+  brand_key     Int?      @default(0)
+  provider      Int?      @default(0)
+  email         String?   @db.VarChar(255)
+  client_id     String?   @db.VarChar(255)
+  client_secret String?   @db.VarChar(255)
+  api_key       String?   @db.VarChar(255)
+  access_token  String?   @db.LongText
+  status        Int       @default(1)
+  deleted_at    DateTime? @db.Timestamp(0)
+  created_at    DateTime? @db.Timestamp(0)
+  updated_at    DateTime? @db.Timestamp(0)
+
+  @@index([brand_key], map: "email_configurations_brand_key_index")
+  @@index([created_by], map: "email_configurations_created_by_index")
+  @@index([parent_id], map: "email_configurations_parent_id_index")
+}
+
+model expenses {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key    Int
+  brand_key   Int
+  creator_id  Int
+  agent_id    Int
+  client_id   Int
+  project_id  Int
+  amount      Decimal   @db.Decimal(8, 2)
+  title       String    @db.Text
+  description String    @db.Text
+  status      Int
+  deleted_at  DateTime? @db.Timestamp(0)
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+}
+
+model failed_jobs {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  uuid       String   @unique(map: "failed_jobs_uuid_unique") @db.VarChar(255)
+  connection String   @db.Text
+  queue      String   @db.Text
+  payload    String   @db.LongText
+  exception  String   @db.LongText
+  failed_at  DateTime @default(now()) @db.Timestamp(0)
+}
+
+model files {
+  id                BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key          Int
+  brand_key         Int
+  creatorid         Int
+  clientid          Int
+  projectid         Int
+  filename          String    @db.VarChar(255)
+  extension         String    @db.VarChar(255)
+  size              String    @db.VarChar(255)
+  type              String    @db.VarChar(255)
+  thumbname         String    @db.VarChar(255)
+  visibility_client String    @db.VarChar(255)
+  fileresource_type String    @db.VarChar(50)
+  created_at        DateTime? @db.Timestamp(0)
+  updated_at        DateTime? @db.Timestamp(0)
+}
+
+model google_o_auths {
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id      BigInt?   @default(0) @db.UnsignedBigInt
+  access_token String    @db.LongText
+  deleted_at   DateTime? @db.Timestamp(0)
+  created_at   DateTime? @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model invoice_signatures {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  invoice_id BigInt?   @default(0) @db.UnsignedBigInt
+  signature  String?   @db.LongText
+  status     Int       @default(1) @db.TinyInt
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model invoices {
+  id                            Int             @id @default(autoincrement())
+  invoice_num                   String          @db.VarChar(50)
+  invoice_key                   Int
+  team_key                      Int?
+  brand_key                     Int
+  creatorid                     Int
+  clientid                      Int
+  agent_id                      Int
+  project_id                    Int
+  final_amount                  Decimal         @db.Decimal(8, 2)
+  due_date                      DateTime        @default(now()) @db.Timestamp(0)
+  sales_type                    String?         @db.VarChar(50)
+  is_split                      Int?            @default(0) @db.TinyInt
+  status                        invoices_status @default(due)
+  deleted_at                    DateTime?       @db.Timestamp(0)
+  created_at                    DateTime?       @db.Timestamp(0)
+  updated_at                    DateTime?       @db.Timestamp(0)
+  invoice_descriptione          String?         @db.Text
+  cur_symbol                    String          @default("USD") @db.VarChar(255)
+  is_tax                        Int?            @default(0) @db.TinyInt
+  split_tax                     Int?            @default(0) @db.TinyInt
+  tax_percentage                Int             @default(0)
+  tax_amount                    Decimal         @default(0.00) @db.Decimal(8, 2)
+  tax_paid                      Int?            @default(0) @db.TinyInt
+  is_merchant_handling_fee      Int?            @default(0) @db.TinyInt
+  split_merchant_handling_fee   Int?            @default(0) @db.TinyInt
+  merchant_handling_fee         Decimal?        @default(0.00) @db.Decimal(16, 2)
+  merchant_handling_fee_paid    Int?            @default(0) @db.TinyInt
+  total_amount                  Decimal         @default(0.00) @db.Decimal(8, 2)
+  creator_role                  String?         @default("USR") @db.VarChar(10)
+  payment_gateway               String          @default("authorize") @db.VarChar(255)
+  payment_id                    String?         @db.VarChar(50)
+  payment_division              String          @default("0") @db.VarChar(1)
+  received_amount               String?         @db.VarChar(255)
+  is_tax_curl                   Int?            @default(0) @db.TinyInt
+  is_merchant_handling_fee_curl Int?            @default(0) @db.TinyInt
+
+  @@index([agent_id], map: "agent_id")
+  @@index([brand_key], map: "brand_key")
+  @@index([clientid], map: "clientid")
+  @@index([creatorid], map: "creatorid")
+  @@index([invoice_key], map: "invoice_key")
+  @@index([invoice_num], map: "invoice_num")
+  @@index([team_key], map: "team_key")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model ip_addresses {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  ip_address String?   @db.VarChar(45)
+  list_type  Int?      @db.TinyInt
+  detail     String?   @db.Text
+  status     Int       @default(1) @db.TinyInt
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  deleted_at DateTime? @db.Timestamp(0)
+}
+
+model jobs {
+  id           BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  queue        String @db.VarChar(255)
+  payload      String @db.LongText
+  attempts     Int    @db.UnsignedTinyInt
+  reserved_at  Int?   @db.UnsignedInt
+  available_at Int    @db.UnsignedInt
+  created_at   Int    @db.UnsignedInt
+
+  @@index([queue], map: "jobs_queue_index")
+}
+
+model labels {
+  id                 BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  board_list_card_id BigInt?   @default(0)
+  user_id            BigInt?   @db.UnsignedBigInt
+  color_id           BigInt?   @default(0)
+  label_text         String?   @db.VarChar(255)
+  deleted_at         DateTime? @db.Timestamp(0)
+  created_at         DateTime? @db.Timestamp(0)
+  updated_at         DateTime? @db.Timestamp(0)
+
+  @@index([user_id], map: "labels_user_id_index")
+}
+
+model lead_assigns {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  leadid     Int
+  userid     Int
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model lead_comments {
+  id           BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  creatorid    Int
+  leadid       Int
+  comment_text String             @db.Text
+  type         lead_comments_type
+  deleted_at   DateTime?          @db.Timestamp(0)
+  created_at   DateTime?          @db.Timestamp(0)
+  updated_at   DateTime?          @db.Timestamp(0)
+}
+
+model lead_statuses {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  status           String    @db.VarChar(255)
+  leadstatus_color String?   @default("default") @db.VarChar(255)
+  deleted_at       DateTime? @db.Timestamp(0)
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model leads {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key         Int
+  brand_key        Int
+  title            String?   @db.VarChar(255)
+  name             String?   @db.VarChar(255)
+  email            String?   @db.VarChar(255)
+  phone            String?   @db.VarChar(255)
+  details          String?   @db.Text
+  source           String?   @db.VarChar(255)
+  value            Float?    @default(0.00)
+  options          String?   @db.Text
+  lead_ip          String?   @db.VarChar(50)
+  lead_city        String?   @db.VarChar(50)
+  lead_state       String?   @db.VarChar(50)
+  lead_zip         String?   @db.VarChar(50)
+  lead_country     String?   @db.VarChar(50)
+  lead_url         String?   @db.VarChar(255)
+  file             String?   @db.LongText
+  view             Int?      @default(0)
+  keyword          String?   @db.VarChar(100)
+  matchtype        String?   @db.VarChar(100)
+  msclkid          String?   @db.VarChar(100)
+  gclid            String?   @db.VarChar(100)
+  server_response  String?   @db.Text
+  more_details     String?   @db.LongText
+  status           Int?      @default(1)
+  deleted_at       DateTime? @db.Timestamp(0)
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+  ip_response      String?   @db.LongText
+  number_response  String?   @db.LongText
+  email_response   String?   @db.LongText
+  is_number_verify Int       @default(0) @db.TinyInt
+  is_email_verify  Int       @default(0) @db.TinyInt
+  is_ip_verify     Int       @default(0) @db.TinyInt
+
+  @@index([brand_key], map: "leads_brand_key_index")
+  @@index([created_at], map: "leads_created_at_index")
+  @@index([deleted_at], map: "leads_deleted_at_index")
+  @@index([details(length: 768)], map: "leads_details_index")
+  @@index([email], map: "leads_email_index")
+  @@index([email_response(length: 768)], map: "leads_email_response_index")
+  @@index([gclid], map: "leads_gclid_index")
+  @@index([ip_response(length: 768)], map: "leads_ip_response_index")
+  @@index([is_email_verify], map: "leads_is_email_verify_index")
+  @@index([is_ip_verify], map: "leads_is_ip_verify_index")
+  @@index([is_number_verify], map: "leads_is_number_verify_index")
+  @@index([keyword], map: "leads_keyword_index")
+  @@index([lead_city], map: "leads_lead_city_index")
+  @@index([lead_country], map: "leads_lead_country_index")
+  @@index([lead_ip], map: "leads_lead_ip_index")
+  @@index([lead_state], map: "leads_lead_state_index")
+  @@index([lead_url], map: "leads_lead_url_index")
+  @@index([lead_zip], map: "leads_lead_zip_index")
+  @@index([matchtype], map: "leads_matchtype_index")
+  @@index([msclkid], map: "leads_msclkid_index")
+  @@index([name], map: "leads_name_index")
+  @@index([number_response(length: 768)], map: "leads_number_response_index")
+  @@index([options(length: 768)], map: "leads_options_index")
+  @@index([phone], map: "leads_phone_index")
+  @@index([server_response(length: 768)], map: "leads_server_response_index")
+  @@index([source], map: "leads_source_index")
+  @@index([status], map: "leads_status_index")
+  @@index([team_key], map: "leads_team_key_index")
+  @@index([title], map: "leads_title_index")
+  @@index([updated_at], map: "leads_updated_at_index")
+  @@index([value], map: "leads_value_index")
+  @@index([view], map: "leads_view_index")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model log_actions {
+  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  actor_id        BigInt?   @default(0) @db.UnsignedBigInt
+  actor_type      String?   @default("1") @db.VarChar(255)
+  loggable_id     BigInt?   @default(0) @db.UnsignedBigInt
+  loggable_type   String?   @db.VarChar(255)
+  action          String?   @db.VarChar(255)
+  previous_record String?   @db.LongText
+  status          Int       @default(1) @db.TinyInt
+  deleted_at      DateTime? @db.Timestamp(0)
+  created_at      DateTime? @db.Timestamp(0)
+  updated_at      DateTime? @db.Timestamp(0)
+}
+
+model logs {
+  id         Int       @id @default(autoincrement())
+  ip         String?   @db.VarChar(100)
+  datetime   String?   @db.VarChar(255)
+  method     String?   @db.VarChar(255)
+  url        String?   @db.VarChar(255)
+  status     String?   @db.VarChar(255)
+  size       String?   @db.VarChar(255)
+  referrer   String?   @db.VarChar(255)
+  user_agent String?   @db.Text
+  created_at DateTime  @default(now()) @db.DateTime(0)
+  updated_at DateTime  @default(now()) @db.DateTime(0)
+  deleted_at DateTime? @db.DateTime(0)
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement()) @db.UnsignedInt
+  migration String @db.VarChar(255)
+  batch     Int
+}
+
+model multi_payment_responses {
+  id                   BigInt                                    @id @default(autoincrement()) @db.UnsignedBigInt
+  invoice_id           BigInt?                                   @default(0) @db.UnsignedBigInt
+  response             String                                    @db.LongText
+  payment_gateway      String                                    @db.VarChar(255)
+  payment_process_from String                                    @db.LongText
+  form_inputs          String?                                   @db.LongText
+  response_status      Int                                       @default(0)
+  deleted_at           DateTime?                                 @db.Timestamp(0)
+  created_at           DateTime?                                 @db.Timestamp(0)
+  updated_at           DateTime?                                 @db.Timestamp(0)
+  controlling_code     multi_payment_responses_controlling_code? @default(multiple)
+
+  @@index([invoice_id], map: "multi_payment_responses_invoice_id_index")
+  @@index([payment_gateway(length: 250)], map: "multi_payment_responses_payment_gateway_index")
+  @@index([response_status], map: "multi_payment_responses_response_status_index")
+}
+
+model notifications {
+  id              String    @id @db.Char(36)
+  type            String    @db.VarChar(255)
+  notifiable_type String    @db.VarChar(255)
+  notifiable_id   BigInt    @db.UnsignedBigInt
+  data            String    @db.Text
+  read_at         DateTime? @db.Timestamp(0)
+  created_at      DateTime? @db.Timestamp(0)
+  updated_at      DateTime? @db.Timestamp(0)
+
+  @@index([notifiable_type, notifiable_id], map: "notifications_notifiable_type_notifiable_id_index")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model password_resets {
+  email      String    @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+
+  @@index([email], map: "password_resets_email_index")
+  @@ignore
+}
+
+model payment_authorizations {
+  id               BigInt                                 @id @default(autoincrement()) @db.UnsignedBigInt
+  invoice_id       BigInt?                                @default(0) @db.UnsignedBigInt
+  client_id        BigInt?                                @default(0) @db.UnsignedBigInt
+  card_id          BigInt?                                @default(0) @db.UnsignedBigInt
+  payment_gateway  String                                 @db.VarChar(255)
+  merchant_id      BigInt?                                @db.UnsignedBigInt
+  transaction_id   String                                 @db.VarChar(255)
+  response         String                                 @db.LongText
+  capture_response String?                                @db.LongText
+  response_status  Int                                    @default(0)
+  payment_status   payment_authorizations_payment_status? @default(authorized)
+  deleted_at       DateTime?                              @db.Timestamp(0)
+  created_at       DateTime?                              @db.Timestamp(0)
+  updated_at       DateTime?                              @db.Timestamp(0)
+  payment_methods  payment_methods?                       @relation(fields: [merchant_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "payment_authorizations_merchant_id_foreign")
+
+  @@index([card_id], map: "payment_authorizations_card_id_index")
+  @@index([invoice_id], map: "payment_authorizations_invoice_id_index")
+  @@index([merchant_id], map: "payment_authorizations_merchant_id_foreign")
+  @@index([payment_gateway], map: "payment_authorizations_payment_gateway_index")
+  @@index([response_status], map: "payment_authorizations_response_status_index")
+}
+
+model payment_error_cods {
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  error_code   Int
+  error_reason String    @db.Text
+  created_at   DateTime? @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payment_method_expigates {
+  id                              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name                            String?   @db.VarChar(255)
+  email                           String?   @db.VarChar(255)
+  merchant                        String?   @db.VarChar(255)
+  live_login_id                   String?   @db.VarChar(255)
+  live_transaction_key            String?   @db.VarChar(255)
+  test_login_id                   String?   @db.VarChar(255)
+  test_transaction_key            String?   @db.VarChar(255)
+  payment_url                     String?   @db.VarChar(255)
+  currency                        String    @default("USD") @db.VarChar(255)
+  environment                     String?   @default("sandbox") @db.VarChar(255)
+  capacity                        Decimal?  @default(0.00) @db.Decimal(16, 2)
+  cap_usage                       Decimal?  @default(0.00) @db.Decimal(16, 2)
+  limit                           Decimal   @default(0.00) @db.Decimal(16, 2)
+  mode                            Int       @default(1)
+  status                          Int       @default(1)
+  created_at                      DateTime? @db.Timestamp(0)
+  updated_at                      DateTime? @db.Timestamp(0)
+  deleted_at                      DateTime? @db.Timestamp(0)
+  merchant_reporting              Int       @default(0) @db.TinyInt
+  merchant_keys                   String?   @db.VarChar(100)
+  merchant_type                   String?   @db.VarChar(30)
+  chargeback_ratio                String?   @db.VarChar(20)
+  refunds_ratio                   String?   @db.VarChar(20)
+  sale_ratio                      String?   @db.VarChar(20)
+  chargeback_total                String?   @db.VarChar(20)
+  refunds_total                   String?   @db.VarChar(20)
+  sale_total                      String?   @db.VarChar(20)
+  sale_count                      String?   @db.VarChar(20)
+  yesterday_gross_sale            String?   @db.VarChar(20)
+  gross_total                     String?   @db.VarChar(20)
+  chargeback_count                String?   @db.VarChar(20)
+  previous_month_chargeback_count String?   @db.VarChar(20)
+  won_chargeback_count            String?   @db.VarChar(20)
+  won_chargeback_total            String?   @db.VarChar(20)
+  representment_count             String?   @db.VarChar(20)
+  representment_total             String?   @db.VarChar(20)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payment_method_payarcs {
+  id                   BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name                 String?   @db.VarChar(255)
+  email                String?   @db.VarChar(255)
+  merchant             String?   @db.VarChar(255)
+  live_login_id        String?   @db.LongText
+  live_transaction_key String?   @db.LongText
+  test_login_id        String?   @db.LongText
+  test_transaction_key String?   @db.LongText
+  currency             String    @default("USD") @db.VarChar(255)
+  environment          String?   @default("sandbox") @db.VarChar(255)
+  capacity             Decimal?  @default(0.00) @db.Decimal(16, 2)
+  cap_usage            Decimal?  @default(0.00) @db.Decimal(16, 2)
+  limit                Decimal   @default(0.00) @db.Decimal(16, 2)
+  mode                 Int       @default(1)
+  status               Int       @default(1)
+  created_at           DateTime? @db.Timestamp(0)
+  updated_at           DateTime? @db.Timestamp(0)
+  deleted_at           DateTime? @db.Timestamp(0)
+}
+
+model payment_methods {
+  id                              BigInt                   @id @default(autoincrement()) @db.UnsignedBigInt
+  name                            String                   @db.VarChar(255)
+  live_login_id                   String                   @db.VarChar(255)
+  live_transaction_key            String                   @db.VarChar(255)
+  live_signature_key              String?                  @db.VarChar(255)
+  test_login_id                   String                   @db.VarChar(255)
+  test_transaction_key            String                   @db.VarChar(255)
+  test_signature_key              String?                  @db.VarChar(255)
+  gateway_id                      String?                  @db.VarChar(255)
+  mmid                            String?                  @db.VarChar(255)
+  evnironment                     String                   @db.VarChar(255)
+  email                           String                   @db.VarChar(255)
+  authorization                   Int?                     @default(0) @db.TinyInt
+  currency                        String                   @db.VarChar(255)
+  mode                            Int
+  status                          Int
+  created_at                      DateTime?                @db.Timestamp(0)
+  updated_at                      DateTime?                @db.Timestamp(0)
+  merchant                        String                   @db.VarChar(255)
+  capacity                        Decimal?                 @default(0.00) @db.Decimal(16, 2)
+  cap_usage                       Decimal?                 @default(0.00) @db.Decimal(16, 2)
+  limit                           Decimal                  @default(0) @db.Decimal(8, 0)
+  merchant_reporting              Int                      @default(0) @db.TinyInt
+  merchant_keys                   String?                  @db.VarChar(100)
+  merchant_type                   String?                  @db.VarChar(30)
+  chargeback_ratio                String?                  @db.VarChar(20)
+  refunds_ratio                   String?                  @db.VarChar(20)
+  sale_ratio                      String?                  @db.VarChar(20)
+  chargeback_total                String?                  @db.VarChar(20)
+  refunds_total                   String?                  @db.VarChar(20)
+  sale_total                      String?                  @db.VarChar(20)
+  sale_count                      String?                  @db.VarChar(20)
+  yesterday_gross_sale            String?                  @db.VarChar(20)
+  gross_total                     String?                  @db.VarChar(20)
+  chargeback_count                String?                  @db.VarChar(20)
+  previous_month_chargeback_count String?                  @db.VarChar(20)
+  won_chargeback_count            String?                  @db.VarChar(20)
+  won_chargeback_total            String?                  @db.VarChar(20)
+  representment_count             String?                  @db.VarChar(20)
+  representment_total             String?                  @db.VarChar(20)
+  payment_authorizations          payment_authorizations[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payment_transactions_logs {
+  id              Int       @id @default(autoincrement())
+  team_key        Int
+  brand_key       Int
+  clientid        Int
+  invoiceid       Int
+  merchant_id     BigInt?   @db.UnsignedBigInt
+  projectid       Int
+  amount          Decimal   @db.Decimal(8, 2)
+  payment_gateway Int?      @db.TinyInt
+  response_code   String?   @db.VarChar(255)
+  message_code    String    @db.VarChar(255)
+  response_reason String    @db.Text
+  address         String?   @db.VarChar(255)
+  zipcode         String?   @db.VarChar(255)
+  city            String?   @db.VarChar(255)
+  state           String?   @db.VarChar(255)
+  country         String?   @db.VarChar(255)
+  deleted_at      DateTime? @db.Timestamp(0)
+  created_at      DateTime? @db.Timestamp(0)
+  updated_at      DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payments {
+  id                          BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key                    Int
+  brand_key                   Int
+  creatorid                   Int
+  actor_id                    BigInt?              @default(0) @db.UnsignedBigInt
+  actor_type                  String?              @db.VarChar(255)
+  agent_id                    Int
+  clientid                    Int
+  invoice_id                  Int
+  name                        String               @db.VarChar(255)
+  email                       String               @db.VarChar(255)
+  address                     String               @db.VarChar(255)
+  amount                      Float                @db.Float
+  authorizenet_transaction_id String               @default("0000") @db.VarChar(255)
+  payment_response            String?              @db.LongText
+  transaction_response        String?              @db.LongText
+  payment_gateway             String               @db.VarChar(255)
+  payment_notes               String?              @db.Text
+  type                        String?              @default("PPC") @db.VarChar(255)
+  payment_status              String?              @db.VarChar(255)
+  payment_status_process_time DateTime?            @db.Timestamp(0)
+  settlement                  payments_settlement? @default(captured_pending_settlement)
+  settlement_process_time     DateTime?            @db.Timestamp(0)
+  settlement_response         String?              @db.LongText
+  response_code               String?              @db.VarChar(255)
+  auth_id                     String?              @db.VarChar(255)
+  message_code                String?              @db.VarChar(255)
+  deleted_at                  DateTime?            @db.Timestamp(0)
+  created_at                  DateTime?            @db.Timestamp(0)
+  updated_at                  DateTime?            @db.Timestamp(0)
+  project_id                  Int?
+  sales_type                  String?              @default("Fresh") @db.VarChar(255)
+  phone                       String?              @db.VarChar(50)
+  compliance_verified         Int                  @default(0)
+  head_verified               Int                  @default(0)
+  audio                       String?              @db.VarChar(255)
+  compliance_varified_note    String?              @db.Text
+  merchant_id                 Int                  @default(0)
+  card_type                   String?              @db.VarChar(255)
+  card_name                   String?              @db.VarChar(255)
+  card_number                 Int?
+  card_exp_month              String?              @db.VarChar(255)
+  card_exp_year               String?              @db.VarChar(255)
+  card_cvv                    String?              @db.VarChar(255)
+  ip                          String?              @db.VarChar(255)
+  city                        String?              @db.VarChar(255)
+  state                       String?              @db.VarChar(255)
+  country                     String?              @db.VarChar(255)
+}
+
+model personal_access_tokens {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  tokenable_type String    @db.VarChar(255)
+  tokenable_id   BigInt    @db.UnsignedBigInt
+  name           String    @db.VarChar(255)
+  token          String    @unique(map: "personal_access_tokens_token_unique") @db.VarChar(64)
+  abilities      String?   @db.Text
+  last_used_at   DateTime? @db.Timestamp(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+
+  @@index([tokenable_type, tokenable_id], map: "personal_access_tokens_tokenable_type_tokenable_id_index")
+}
+
+model project_categories {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name       String    @db.VarChar(255)
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model project_statuses {
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  status       String    @db.VarChar(255)
+  status_color String    @db.VarChar(255)
+  deleted_at   DateTime? @db.Timestamp(0)
+  created_at   DateTime? @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model projects {
+  id                  BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key            BigInt?   @db.UnsignedBigInt
+  brand_key           BigInt?   @db.UnsignedBigInt
+  creatorid           BigInt    @db.UnsignedBigInt
+  clientid            BigInt    @db.UnsignedBigInt
+  agent_id            BigInt?   @db.UnsignedBigInt
+  asigned_id          BigInt?   @db.UnsignedBigInt
+  category_id         BigInt    @db.UnsignedBigInt
+  project_title       String    @db.VarChar(255)
+  project_date_start  DateTime? @db.Timestamp(0)
+  project_date_due    DateTime? @db.Timestamp(0)
+  project_description String?   @db.LongText
+  project_status      BigInt    @db.UnsignedBigInt
+  project_cost        Decimal?  @db.Decimal(8, 2)
+  project_progress    Int?
+  priority            Int?      @default(1) @db.TinyInt
+  deleted_at          DateTime? @db.Timestamp(0)
+  created_at          DateTime? @db.Timestamp(0)
+  updated_at          DateTime? @db.Timestamp(0)
+  qa_status           Int?      @default(0)
+  my_teamwork         Int?      @default(0)
+
+  @@index([agent_id], map: "agent_id")
+  @@index([asigned_id], map: "asigned_id")
+  @@index([brand_key], map: "brand_key")
+  @@index([category_id], map: "category_id")
+  @@index([clientid], map: "clientid")
+  @@index([creatorid], map: "creatorid")
+  @@index([project_status], map: "project_status")
+  @@index([team_key], map: "team_key")
+}
+
+model refunds {
+  id                          BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key                    Int
+  brand_key                   Int
+  agent_id                    Int
+  client_id                   Int
+  invoice_id                  Int
+  payment_id                  Int
+  authorizenet_transaction_id String       @db.VarChar(255)
+  amount                      Decimal      @db.Decimal(8, 2)
+  reason                      String       @db.Text
+  type                        refunds_type
+  deleted_at                  DateTime?    @db.Timestamp(0)
+  created_at                  DateTime?    @db.Timestamp(0)
+  updated_at                  DateTime?    @db.Timestamp(0)
+  qa_approval                 Int
+}
+
+model spendings {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key      Int
+  brand_key     Int
+  spending_date DateTime  @db.Date
+  platform      String    @db.VarChar(255)
+  amount        String    @db.VarChar(255)
+  deleted_at    DateTime? @db.Timestamp(0)
+  created_at    DateTime? @db.Timestamp(0)
+  updated_at    DateTime? @db.Timestamp(0)
+  creatorid     Int
+}
+
+model split_payments {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  invoice_id     Int
+  transaction_id String?   @db.VarChar(255)
+  amount         Decimal   @db.Decimal(8, 2)
+  status         Int       @default(0)
+  deleted_at     DateTime? @db.Timestamp(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model tasks {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  project_id  BigInt?   @db.UnsignedBigInt
+  card_id     BigInt?   @db.UnsignedBigInt
+  title       String    @db.VarChar(255)
+  proiority   Int?      @default(1) @db.TinyInt
+  description String?   @db.Text
+  assign_to   String    @db.VarChar(100)
+  due_date    String    @db.VarChar(50)
+  deleted_at  DateTime? @db.Timestamp(0)
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model team_carry_forwards {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key   BigInt?   @default(0) @db.UnsignedBigInt
+  amount     Decimal?  @default(0.00) @db.Decimal(16, 2)
+  month      Int?      @default(0) @db.TinyInt
+  year       Int?      @db.Year
+  status     Int       @default(1) @db.TinyInt
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model team_fixed_costings {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key   BigInt?   @default(0) @db.UnsignedBigInt
+  amount     Decimal?  @default(0.00) @db.Decimal(16, 2)
+  month      Int?      @default(0) @db.TinyInt
+  year       Int?      @db.Year
+  status     Int       @default(1) @db.TinyInt
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model team_indirect_costings {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key   BigInt?   @default(0) @db.UnsignedBigInt
+  amount     Decimal?  @default(0.00) @db.Decimal(16, 2)
+  month      Int?      @default(0) @db.TinyInt
+  year       Int?      @db.Year
+  status     Int       @default(1) @db.TinyInt
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model team_spendings {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key   BigInt?   @default(0) @db.UnsignedBigInt
+  accounts   Int?      @default(0)
+  amount     Decimal?  @default(0.00) @db.Decimal(16, 2)
+  limit      Decimal?  @default(0.00) @db.Decimal(16, 2)
+  month      Int?      @default(0) @db.TinyInt
+  year       Int?      @db.Year
+  status     Int       @default(1) @db.TinyInt
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model team_targets {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key   BigInt?   @default(0) @db.UnsignedBigInt
+  amount     Decimal?  @default(0.00) @db.Decimal(16, 2)
+  month      Int?      @default(0) @db.TinyInt
+  year       Int?      @db.Year
+  status     Int       @default(1) @db.TinyInt
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+model teams {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key   Int
+  brand_key  String?   @db.VarChar(255)
+  name       String    @db.VarChar(255)
+  status     Int
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  team_lead  Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model third_party_roles {
+  id             BigInt                          @id @default(autoincrement()) @db.UnsignedBigInt
+  creator_id     BigInt?                         @db.UnsignedBigInt
+  creator_type   String?                         @db.VarChar(25)
+  team_key       BigInt?                         @default(0) @db.UnsignedBigInt
+  agent_id       BigInt?                         @default(0) @db.UnsignedBigInt
+  invoice_id     BigInt?                         @default(0) @db.UnsignedBigInt
+  client_id      BigInt?                         @default(0) @db.UnsignedBigInt
+  order_id       String?                         @db.VarChar(255)
+  order_status   third_party_roles_order_status?
+  description    String?                         @db.LongText
+  amount         Decimal?                        @default(0.00) @db.Decimal(16, 2)
+  merchant_type  Int?                            @default(4) @db.TinyInt
+  transaction_id String?                         @db.VarChar(255)
+  payment_status Int?                            @default(0) @db.TinyInt
+  status         Int                             @default(1) @db.TinyInt
+  deleted_at     DateTime?                       @db.Timestamp(0)
+  created_at     DateTime?                       @db.Timestamp(0)
+  updated_at     DateTime?                       @db.Timestamp(0)
+}
+
+model tracking_ips {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  brand_id         Int?
+  url              String?   @db.LongText
+  ip               String?   @db.VarChar(255)
+  ip_response      String?   @db.LongText
+  checkout_version String?   @db.VarChar(15)
+  status           Int       @default(1)
+  deleted_at       DateTime? @db.Timestamp(0)
+  created_at       DateTime? @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model urls {
+  id               BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  department_id    String?   @default("0") @db.VarChar(10)
+  team_key         Int?      @default(0)
+  url              String?   @db.LongText
+  total_activities Int?      @default(0)
+  verify           Int?      @default(0) @db.TinyInt
+  status           Int       @default(0) @db.TinyInt
+  deleted_at       DateTime? @db.Timestamp(0)
+  created_at       DateTime? @default(now()) @db.Timestamp(0)
+  updated_at       DateTime? @db.Timestamp(0)
+
+  @@index([id], map: "id")
+  @@index([status], map: "status")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user_email_signatures {
+  id                     BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  email_configuration_id BigInt?   @default(0) @db.UnsignedBigInt
+  user_id                BigInt?   @default(0) @db.UnsignedBigInt
+  signature              String?   @db.LongText
+  status                 Int       @default(1) @db.TinyInt
+  deleted_at             DateTime? @db.Timestamp(0)
+  created_at             DateTime? @db.Timestamp(0)
+  updated_at             DateTime? @db.Timestamp(0)
+}
+
+model user_info_apis {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  key        String?   @db.VarChar(255)
+  email      String?   @db.VarChar(255)
+  phone      String?   @db.VarChar(255)
+  balance    BigInt?
+  status     Int       @default(1)
+  deleted_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  id                  BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key            Int?
+  assigned_teams      String?   @db.LongText
+  name                String    @db.VarChar(255)
+  designation         String?   @db.VarChar(255)
+  email               String    @db.VarChar(255)
+  phone               String?   @db.VarChar(200)
+  email_verified_at   DateTime? @db.Timestamp(0)
+  password            String    @db.VarChar(255)
+  type                String    @db.VarChar(255)
+  clientid            Int?
+  target              Int?
+  image               String?   @db.VarChar(255)
+  status              Int?      @default(1)
+  login_access        Int?      @default(0)
+  remember_token      String?   @db.VarChar(100)
+  created_at          DateTime? @db.Timestamp(0)
+  updated_at          DateTime? @db.Timestamp(0)
+  deleted_at          DateTime? @db.Timestamp(0)
+  pseudo_name         String?   @db.VarChar(255)
+  last_seen           DateTime? @db.Timestamp(0)
+  lead_special_access Int       @default(0)
+  user_access         Int       @default(0)
+  pseudo_email        String?   @db.VarChar(255)
+  staff_division      String?   @db.VarChar(255)
+  trello_id           String?   @db.VarChar(255)
+
+  @@index([trello_id], map: "trello_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model webhook_responses {
+  id              BigInt                           @id @default(autoincrement()) @db.UnsignedBigInt
+  merchant_name   webhook_responses_merchant_name? @default(none)
+  merchant_id     BigInt?                          @db.UnsignedBigInt
+  merchant_type   String?                          @db.VarChar(25)
+  notification_id String?                          @db.VarChar(255)
+  webhook_id      String?                          @db.VarChar(255)
+  event_type      String?                          @db.VarChar(255)
+  event_date      DateTime?                        @db.Timestamp(0)
+  response        String?                          @db.LongText
+  status          Int                              @default(1) @db.TinyInt
+  deleted_at      DateTime?                        @db.Timestamp(0)
+  created_at      DateTime?                        @db.Timestamp(0)
+  updated_at      DateTime?                        @db.Timestamp(0)
+}
+
+model website_views {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  user_id     BigInt    @db.UnsignedBigInt
+  page_url    String    @db.LongText
+  ip_address  String?   @db.Text
+  ip_response String?   @db.LongText
+  created_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+
+  @@index([user_id], map: "website_views_user_id_foreign")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model wire_payments {
+  id                  BigInt                          @id @default(autoincrement()) @db.UnsignedBigInt
+  team_key            BigInt?                         @default(0) @db.UnsignedBigInt
+  brand_key           BigInt?                         @default(0) @db.UnsignedBigInt
+  actor_id            BigInt?                         @default(0) @db.UnsignedBigInt
+  actor_type          String?                         @db.VarChar(255)
+  agent_id            BigInt?                         @default(0) @db.UnsignedBigInt
+  client_name         String?                         @db.VarChar(255)
+  client_email        String?                         @db.VarChar(255)
+  client_phone        String?                         @db.VarChar(255)
+  project_title       String?                         @db.VarChar(255)
+  description         String?                         @db.LongText
+  due_date            DateTime?                       @db.Timestamp(0)
+  amount              Decimal?                        @default(0.00) @db.Decimal(16, 2)
+  sales_type          wire_payments_sales_type?       @default(Fresh)
+  transaction_id      String?                         @db.VarChar(255)
+  payment_status      wire_payments_payment_status?   @default(Success)
+  screenshot          String?                         @db.LongText
+  payment_approval    wire_payments_payment_approval? @default(Pending)
+  approval_updated_by BigInt?                         @db.UnsignedBigInt
+  approval_actor_type String?                         @db.VarChar(255)
+  status              Int                             @default(1) @db.TinyInt
+  deleted_at          DateTime?                       @db.Timestamp(0)
+  created_at          DateTime?                       @db.Timestamp(0)
+  updated_at          DateTime?                       @db.Timestamp(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model zoom_configurations {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  created_by    BigInt?   @default(0) @db.UnsignedBigInt
+  parent_id     BigInt?   @default(0) @db.UnsignedBigInt
+  brand_key     Int?      @default(0)
+  email         String?   @db.VarChar(255)
+  client_id     String?   @db.VarChar(255)
+  client_secret String?   @db.VarChar(255)
+  api_key       String?   @db.VarChar(255)
+  zoom_user_id  String?   @db.VarChar(255)
+  access_token  String?   @db.LongText
+  refresh_token String?   @db.Text
+  status        Int       @default(1) @db.TinyInt
+  deleted_at    DateTime? @db.Timestamp(0)
+  created_at    DateTime? @db.Timestamp(0)
+  updated_at    DateTime? @db.Timestamp(0)
+
+  @@index([brand_key], map: "zoom_configurations_brand_key_index")
+  @@index([created_by], map: "zoom_configurations_created_by_index")
+  @@index([parent_id], map: "zoom_configurations_parent_id_index")
+}
+
+model assign_projects {
+  id         Int    @id @default(autoincrement())
+  project_id BigInt
+  team_key   BigInt
+  user_id    BigInt
+}
+
+model batch {
+  id                  BigInt  @id @default(autoincrement()) @db.UnsignedBigInt
+  batch_id            Int?
+  payment_method_id   Int?
+  payment_method_type String? @db.VarChar(10)
+  name                String? @db.VarChar(255)
+  date                String? @db.VarChar(50)
+  amount              String? @db.VarChar(50)
+  dda                 String? @db.VarChar(50)
+  processor_id        String? @db.VarChar(50)
+  processor_type      String? @db.VarChar(50)
+  ach_summary_id      String? @db.VarChar(50)
+  data                String? @db.Text
+}
+
+model charge_backs {
+  id                    BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  chargeback_id         BigInt?   @db.UnsignedBigInt
+  payment_method_id     Int?      @db.UnsignedInt
+  payment_method_type   String?   @db.VarChar(10)
+  related_chargeback_id BigInt?
+  merchant_id           String?   @db.VarChar(255)
+  report_date           DateTime? @db.DateTime(0)
+  sequence_number       String?   @db.VarChar(255)
+  card_type             String?   @db.VarChar(50)
+  card_number           String?   @db.VarChar(50)
+  amount                Decimal?  @db.Decimal(10, 2)
+  transaction_date      DateTime? @db.DateTime(0)
+  reason_code           String?   @db.VarChar(50)
+  description           String?   @db.Text
+  reference_number      String?   @db.VarChar(255)
+  auth_code             String?   @db.VarChar(50)
+  lockbox_batch         String?   @db.VarChar(255)
+  card_identifier       String?   @db.VarChar(255)
+  transaction_code      String?   @db.VarChar(255)
+  transaction_ref       String?   @db.VarChar(50)
+  chargeback_cycle      Int?
+  is_disputed           Boolean?
+  ach_id                String?   @db.VarChar(255)
+  ach_details_id        String?   @db.VarChar(255)
+  currency_id           String?   @db.VarChar(50)
+  email_sent_date       DateTime? @db.DateTime(0)
+  transaction_id        BigInt?
+  message               String?   @db.VarChar(255)
+  created_at            DateTime? @db.DateTime(0)
+  updated_at            DateTime? @db.DateTime(0)
+  status                Int       @default(1) @db.TinyInt
+}
+
+enum webhook_responses_merchant_name {
+  none
+  authorize
+  expigate
+  payarc
+  paypal
+}
+
+enum categories_active {
+  yes
+  no
+}
+
+enum brands_brand_type {
+  Design
+  Book
+}
+
+enum lead_comments_type {
+  admin
+  staff
+  lead
+  ppc
+  qa
+}
+
+enum third_party_roles_order_status {
+  Order_Placed @map("Order Placed")
+  Shipped
+  Delivered
+  On_Hold      @map("On Hold")
+}
+
+enum comments_type {
+  staff
+  client
+}
+
+enum payment_authorizations_payment_status {
+  authorized
+  captured
+}
+
+enum refunds_type {
+  refund
+  chargeback
+}
+
+enum multi_payment_responses_controlling_code {
+  multiple
+  single
+}
+
+enum admins_type {
+  super
+  admin
+}
+
+enum wire_payments_sales_type {
+  Fresh
+  Upsale
+}
+
+enum invoices_status {
+  draft
+  due
+  paid
+  refund
+  chargeback
+  authorized
+}
+
+enum wire_payments_payment_status {
+  Success
+  Refund
+  Chargeback
+}
+
+enum wire_payments_payment_approval {
+  Approved
+  Pending
+  Not_Approved @map("Not Approved")
+}
+
+enum payments_settlement {
+  previous
+  authorized_pending_capture    @map("authorized pending capture")
+  captured_pending_settlement   @map("captured pending settlement")
+  communication_error           @map("communication error")
+  refund_settled_successfully   @map("refund settled successfully")
+  refund_pending_settlement     @map("refund pending settlement")
+  approved_review               @map("approved review")
+  declined
+  could_not_void                @map("could not void")
+  expired
+  general_error                 @map("general error")
+  failed_review                 @map("failed review")
+  settled_successfully          @map("settled successfully")
+  settlement_error              @map("settlement error")
+  under_review                  @map("under review")
+  voided
+  fds_pending_review            @map("fds pending review")
+  fds_authorized_pending_review @map("fds authorized pending review")
+  returned_item                 @map("returned item")
+}
